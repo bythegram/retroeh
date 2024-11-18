@@ -15,27 +15,27 @@
 
  ## How to Use the Block
  ### Add the Block to a Page or Post
- 1. Navigate to **Pages*or **Posts*in the WordPress admin dashboard.
+ 1. Navigate to **Pages*** or **Posts** in the WordPress admin dashboard.
  2. Open the desired page/post or create a new one.
  3. In the block editor:
-    - Click the **Add Block*(`+`) button.
+    - Click the **Add Block** (`+`) button.
     - Search for "RetroEH Game Display."
     - Add the block to your page or post.
  4. Configure the block:
-    - Enter your **API Key*from RetroAchievements.
-    - Provide a **Username*to display the latest game played by the user.
-    - (Optional) Specify a **Game ID*to show details for a specific game.
+    - Enter your **API Key** from RetroAchievements.
+    - Provide a **Username** to display the latest game played by the user.
+    - (Optional) Specify a **Game ID** to show details for a specific game.
  5. Save or publish the page/post.
 
  ### Add the Block to a Sidebar or Widget Area
- 1. Navigate to **Appearance > Widgets*in the WordPress admin dashboard.
- 2. Click on the **Add Block*(`+`) button in the desired widget area (e.g., Sidebar).
+ 1. Navigate to **Appearance > Widgets** in the WordPress admin dashboard.
+ 2. Click on the **Add Block** (`+`) button in the desired widget area (e.g., Sidebar).
  3. Search for "RetroEH Game Display."
  4. Add the block to the widget area.
  5. Configure the block:
-    - Enter your **API Key*from RetroAchievements.
-    - Provide a **Username*to display the latest game played by the user.
-    - (Optional) Specify a **Game ID*to show details for a specific game.
+    - Enter your **API Key** from RetroAchievements.
+    - Provide a **Username** to display the latest game played by the user.
+    - (Optional) Specify a **Game ID** to show details for a specific game.
  6. Save the widget.
 
  ## Block Attributes
