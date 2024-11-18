@@ -37,7 +37,7 @@ function retroeh_last_game_display_shortcode($atts) {
     $atts = shortcode_atts(array(
         'api_key' => '',
         'username' => '',
-        'game_id' => '' // New parameter for Game ID
+        'game_id' => ''
     ), $atts, 'retroachievements_game_display');
     
     $api_key = sanitize_text_field($atts['api_key']);

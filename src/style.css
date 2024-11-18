@@ -4,19 +4,19 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    width: 100%;
+    width: calc(100% - 20px);
     height: 360px;
     color: #fff;
     padding: 20px;
+    margin: 10px;
     box-sizing: border-box;
     overflow: hidden;
-    border: 5px solid #39ff14; /* Neon green border */
     border-radius: 10px;
     font-size: 18px;
     background-color: #010a01;
     background-repeat: no-repeat;
     background-size: cover;
-    box-shadow: 0 0 20px 5px black; /* Solid black box shadow */
+    background-position: center;
 }
 
 /* Background overlay */
@@ -30,26 +30,27 @@
     background: inherit;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
     opacity: 0.6; /* Adjust the opacity as desired */
     z-index: 1;
-    filter: brightness(0.7); /* Optional: Darken the background slightly */
+    filter: brightness(0.6); /* Optional: Darken the background slightly */
 }
 
 /* Content styling */
-.retroeh-box-art,
-.retroeh-details {
+.retroeh-container .retroeh-box-art,
+.retroeh-container .retroeh-details {
     position: relative;
     z-index: 2; /* Ensure content is above the overlay */
 }
 
 /* Box art styling */
-.retroeh-box-art {
+.retroeh-container .retroeh-box-art {
     flex: 0 0 auto;
     max-height: 320px;
     margin-right: 20px;
 }
 
-.retroeh-box-art img {
+.retroeh-container .retroeh-box-art img {
     max-height: 320px;
     height: auto;
     width: auto;
@@ -58,22 +59,22 @@
 }
 
 /* Game details styling */
-.retroeh-details {
+.retroeh-container .retroeh-details {
     flex: 1;
     padding: 0 20px;
     text-align: left;
 }
 
-.retroeh-details h2 {
+.retroeh-container .retroeh-details h2 {
     margin: 0 0 10px;
     font-family: "Tiny5", sans-serif; /* Custom font */
-    font-size: 7vw;
+    font-size: 5vw;
     line-height: .8;;
     animation: pulsate 0.11s ease-in-out infinite alternate;
     color: #39ff14; /* Neon green text */
 }
 
-.retroeh-details p {
+.retroeh-container .retroeh-details p {
     margin: 0;
     padding: 0.5rem 1rem;
     margin-right: -40px;
@@ -83,13 +84,26 @@
     color: #fff; /* Ensure text remains readable */
 }
 
-/* Placeholder styling for block editor */
-.retroeh-block-placeholder {
-    background: #010a01;
-    color: #39ff14;
-    padding: 10px;
-    border: 1px solid #39ff14;
-    border-radius: 5px;
-    text-align: center;
-    font-family: "Tiny5", sans-serif;
+/* Flex column layout for mobile devices */
+@media screen and (max-width: 768px) {
+    .retroeh-container {
+        flex-direction: column;
+        align-items: center;
+        height: auto; /* Allow the container to adjust height */
+    }
+
+    .retroeh-container .retroeh-box-art {
+        margin-right: 0; /* Remove right margin for better alignment */
+        margin-bottom: 20px; /* Add some space below the box art */
+    }
+
+    .retroeh-container .retroeh-details {
+        text-align: center; /* Center-align the text for mobile */
+        padding: 0; /* Remove extra padding for better fit */
+    }
+
+    .retroeh-container .retroeh-details p {
+        padding: 0.5rem 1rem;
+        margin-left: -40px;
+    }
 }
