@@ -68,9 +68,7 @@
 .retroeh-container .retroeh-details h2 {
     margin: 0 0 10px;
     font-family: "Tiny5", sans-serif; /* Custom font */
-    font-size: 5vw;
-    line-height: .8;;
-    animation: pulsate 0.11s ease-in-out infinite alternate;
+    line-height: .8;
     color: #39ff14; /* Neon green text */
 }
 
