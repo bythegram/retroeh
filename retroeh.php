@@ -75,6 +75,18 @@ function retroeh_enqueue_styles() {
         return;
     }
 
+    /**
+     * Filter whether to load the plugin's default stylesheet.
+     *
+     * Theme developers can return false to disable the plugin's built-in CSS
+     * and supply their own styles targeting the `.retroeh-*` class names.
+     *
+     * @param bool $use_default_styles Whether to enqueue the default stylesheet. Default true.
+     */
+    if ( ! apply_filters( 'retroeh_use_default_styles', true ) ) {
+        return;
+    }
+
     wp_enqueue_style(
         'retroeh-google-font',
         'https://fonts.googleapis.com/css2?family=Tiny5&display=swap',
