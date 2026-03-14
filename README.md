@@ -8,7 +8,7 @@ The block can be configured to show the latest game played by a user or details 
 - **Secure API Key Storage**: Your RetroAchievements API key is stored in WordPress options via a dedicated settings page — never exposed in post content or block attributes.
 - **Transient Caching**: API responses are cached for one hour using WordPress transients, minimizing external HTTP calls and improving page load times.
 - **Conditional Asset Loading**: Plugin CSS and Google Fonts are only enqueued on pages that actually contain the block or shortcode.
-- **Stylish Design**: Neon-themed design with responsive layouts optimized for desktop and mobile devices.
+- **Stylish Design**: Neon-themed design with responsive layouts optimized for desktop and mobile devices. Theme developers can disable the built-in stylesheet via the `retroeh_use_default_styles` filter and supply their own CSS.
 
 ## Installation
 1. Download the zip from the repository.
@@ -64,6 +64,31 @@ The API key is read automatically from the plugin settings. The `api_key` attrib
 - **Game ID**: (Optional) The ID of the game to display specific details. If provided, this takes precedence over the username.
 
 > **Note:** The API key is no longer a block attribute. Configure it once under **Settings > RetroEh!**.
+
+## Theme Developer Customisation
+
+### Overriding the Default Styles
+
+The plugin ships with a built-in stylesheet (`src/style.css`) that applies the neon-themed design.
+Theme developers can disable this stylesheet and provide their own CSS by hooking into the
+`retroeh_use_default_styles` filter and returning `false`:
+
+```php
+add_filter( 'retroeh_use_default_styles', '__return_false' );
+```
+
+Once the default stylesheet is disabled, you can style the widget using the plugin's BEM-style class names:
+
+| Class | Element |
+|---|---|
+| `.retroeh-container` | Outer wrapper / background image container |
+| `.retroeh-box-art` | Box art image wrapper |
+| `.retroeh-box-art img` | The box art `<img>` element |
+| `.retroeh-details` | Game details text wrapper |
+| `.retroeh-details h2` | Game title heading |
+| `.retroeh-details p` | Console and last-played paragraphs |
+
+Place this snippet in your theme's `functions.php` (or in a site-specific plugin) and enqueue your own stylesheet as normal via `wp_enqueue_style()`.
 
 ## Security
 - The RetroAchievements API key is stored in `wp_options` via `register_setting` with `sanitize_text_field` as the sanitize callback.
