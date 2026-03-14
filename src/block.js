@@ -1,7 +1,7 @@
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
 const { InspectorControls } = wp.blockEditor;
-const { PanelBody, TextControl } = wp.components;
+const { PanelBody, TextControl, Notice } = wp.components;
 
 // Register the block
 registerBlockType('retroeh/game-display', {
@@ -10,10 +10,6 @@ registerBlockType('retroeh/game-display', {
     icon: 'smiley',
     category: 'widgets',
     attributes: {
-        api_key: {
-            type: 'string',
-            default: '',
-        },
         username: {
             type: 'string',
             default: '',
@@ -24,18 +20,15 @@ registerBlockType('retroeh/game-display', {
         },
     },
     edit({ attributes, setAttributes }) {
-        const { api_key, username, game_id } = attributes;
+        const { username, game_id } = attributes;
 
         return (
             <>
                 <InspectorControls>
                     <PanelBody title={__('RetroEH Settings', 'retroeh')} initialOpen={true}>
-                        <TextControl
-                            label={__('API Key', 'retroeh')}
-                            value={api_key}
-                            onChange={(value) => setAttributes({ api_key: value })}
-                            placeholder={__('Enter your API key', 'retroeh')}
-                        />
+                        <Notice status="info" isDismissible={false}>
+                            {__('Set your RetroAchievements API key under Settings → RetroEh! to keep it secure.', 'retroeh')}
+                        </Notice>
                         <TextControl
                             label={__('Username', 'retroeh')}
                             value={username}
