@@ -68,7 +68,9 @@ function retroeh_enqueue_styles() {
     global $post;
     $should_enqueue = is_a( $post, 'WP_Post' ) && (
         has_block( 'retroeh/game-display', $post ) ||
-        has_shortcode( $post->post_content, 'retroeh_game_display' )
+        has_block( 'retroeh/user-profile', $post ) ||
+        has_shortcode( $post->post_content, 'retroeh_game_display' ) ||
+        has_shortcode( $post->post_content, 'retroeh_user_profile' )
     );
 
     if ( ! $should_enqueue ) {
@@ -236,6 +238,110 @@ function retroeh_last_game_display_shortcode( $atts ) {
 // Register the shortcode
 add_shortcode( 'retroeh_game_display', 'retroeh_last_game_display_shortcode' );
 
+// Shortcode to display a RetroAchievements user profile card
+function retroeh_user_profile_shortcode( $atts ) {
+    $atts = shortcode_atts( array(
+        'username' => '',
+    ), $atts, 'retroeh_user_profile' );
+
+    $api_key  = sanitize_text_field( get_option( 'retroeh_api_key', '' ) );
+    $username = sanitize_text_field( $atts['username'] );
+
+    if ( empty( $api_key ) || empty( $username ) ) {
+        return '<p style="color: red;">' . esc_html__( 'Error: API key and a username are required.', 'retroeh' ) . '</p>';
+    }
+
+    $api_key_hash = substr( md5( $api_key ), 0, 8 );
+    $cache_key    = 'retroeh_profile_' . md5( $username ) . '_' . $api_key_hash;
+    $data         = get_transient( $cache_key );
+
+    if ( false === $data ) {
+        $request_url = add_query_arg( array(
+            'u' => $username,
+            'y' => $api_key,
+        ), 'https://retroachievements.org/API/API_GetUserProfile.php' );
+
+        $response = wp_remote_get( $request_url, array( 'timeout' => 10 ) );
+
+        if ( is_wp_error( $response ) ) {
+            return '<p style="color: red;">' . esc_html( $response->get_error_message() ) . '</p>';
+        }
+
+        $status_code = wp_remote_retrieve_response_code( $response );
+        if ( $status_code !== 200 ) {
+            return '<p style="color: red;">' . esc_html( sprintf( __( 'Error: API returned status code %d.', 'retroeh' ), absint( $status_code ) ) ) . '</p>';
+        }
+
+        $body = wp_remote_retrieve_body( $response );
+        $data = json_decode( $body, true );
+
+        if ( null === $data || empty( $data['User'] ) ) {
+            return '<p style="color: red;">' . esc_html__( 'Error: User not found or invalid API response.', 'retroeh' ) . '</p>';
+        }
+
+        set_transient( $cache_key, $data, HOUR_IN_SECONDS );
+    }
+
+    $display_name   = isset( $data['User'] ) ? $data['User'] : $username;
+    $motto          = isset( $data['Motto'] ) ? $data['Motto'] : '';
+    $total_points   = isset( $data['TotalPoints'] ) ? absint( $data['TotalPoints'] ) : 0;
+    $true_points    = isset( $data['TotalTruePoints'] ) ? absint( $data['TotalTruePoints'] ) : 0;
+    $rich_presence  = isset( $data['RichPresenceMsg'] ) ? $data['RichPresenceMsg'] : '';
+    $member_since   = isset( $data['MemberSince'] ) ? $data['MemberSince'] : '';
+    $user_pic       = isset( $data['UserPic'] ) ? $data['UserPic'] : '/UserPic/' . $display_name . '.png';
+    $avatar_url     = 'https://media.retroachievements.org' . $user_pic;
+
+    $member_since_display = '';
+    if ( ! empty( $member_since ) ) {
+        try {
+            $since_dt             = new DateTime( $member_since );
+            $member_since_display = $since_dt->format( 'F j, Y' );
+        } catch ( Exception $e ) {
+            error_log( 'RetroEh! user profile date parse error: ' . $e->getMessage() );
+            $member_since_display = esc_html( $member_since );
+        }
+    }
+
+    ob_start();
+    ?>
+    <div class="retroeh-profile-card">
+        <div class="retroeh-profile-avatar">
+            <img src="<?php echo esc_url( $avatar_url ); ?>"
+                 alt="<?php echo esc_attr( sprintf( __( '%s\'s RetroAchievements avatar', 'retroeh' ), $display_name ) ); ?>">
+        </div>
+        <div class="retroeh-profile-info">
+            <h2><?php echo esc_html( $display_name ); ?></h2>
+            <?php if ( ! empty( $motto ) ) : ?>
+                <p class="retroeh-profile-motto"><?php echo esc_html( $motto ); ?></p>
+            <?php endif; ?>
+            <div class="retroeh-profile-stats">
+                <p>
+                    <span class="retroeh-stat-label"><?php esc_html_e( 'Points:', 'retroeh' ); ?></span>
+                    <span class="retroeh-stat-value"><?php echo esc_html( number_format( $total_points ) ); ?></span>
+                </p>
+                <p>
+                    <span class="retroeh-stat-label"><?php esc_html_e( 'True Points:', 'retroeh' ); ?></span>
+                    <span class="retroeh-stat-value"><?php echo esc_html( number_format( $true_points ) ); ?></span>
+                </p>
+                <?php if ( ! empty( $member_since_display ) ) : ?>
+                    <p>
+                        <span class="retroeh-stat-label"><?php esc_html_e( 'Member Since:', 'retroeh' ); ?></span>
+                        <span class="retroeh-stat-value"><?php echo esc_html( $member_since_display ); ?></span>
+                    </p>
+                <?php endif; ?>
+            </div>
+            <?php if ( ! empty( $rich_presence ) ) : ?>
+                <p class="retroeh-profile-presence"><?php echo esc_html( $rich_presence ); ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+// Register the user profile shortcode
+add_shortcode( 'retroeh_user_profile', 'retroeh_user_profile_shortcode' );
+
 // Enqueue block scripts and styles
 function retroeh_register_block() {
     wp_register_script(
@@ -261,12 +367,31 @@ function retroeh_register_block() {
             ),
         ),
     ) );
+
+    register_block_type( 'retroeh/user-profile', array(
+        'editor_script'   => 'retroeh-block',
+        'editor_style'    => 'retroeh-block-style',
+        'render_callback' => 'retroeh_render_user_profile_block',
+        'attributes'      => array(
+            'username' => array(
+                'type'    => 'string',
+                'default' => '',
+            ),
+        ),
+    ) );
 }
 add_action( 'init', 'retroeh_register_block' );
 
-// Render callback for the block
+// Render callback for the game display block
 function retroeh_render_game_block( $attributes ) {
     return do_shortcode(
         '[retroeh_game_display username="' . esc_attr( $attributes['username'] ) . '" game_id="' . esc_attr( $attributes['game_id'] ) . '"]'
+    );
+}
+
+// Render callback for the user profile block
+function retroeh_render_user_profile_block( $attributes ) {
+    return do_shortcode(
+        '[retroeh_user_profile username="' . esc_attr( $attributes['username'] ) . '"]'
     );
 }
