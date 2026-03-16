@@ -1,13 +1,14 @@
 Retro Eh!
-A WordPress plugin that provides a custom Gutenberg block to display RetroAchievements game details.
-The block can be configured to show the latest game played by a user or details of a specific game using its Game ID.
+A WordPress plugin that provides custom Gutenberg blocks to display RetroAchievements data.
+Blocks can show the latest game played by a user, details for a specific game, or a full user profile card with points, motto, and current activity.
 
 ## Features
-- **Customizable Gutenberg Block**: Add the block to pages, posts, or sidebars.
+- **Two Gutenberg Blocks**: Game Display and User Profile — add either to pages, posts, or sidebars.
 - **Game Display Options**: Display the latest game played by a username or specify a Game ID to show details for a particular game.
+- **User Profile Card**: Display a retro-styled profile card with avatar, username, motto, hardcore/true-point totals, member-since date, and rich-presence activity.
 - **Secure API Key Storage**: Your RetroAchievements API key is stored in WordPress options via a dedicated settings page — never exposed in post content or block attributes.
 - **Transient Caching**: API responses are cached for one hour using WordPress transients, minimizing external HTTP calls and improving page load times.
-- **Conditional Asset Loading**: Plugin CSS and Google Fonts are only enqueued on pages that actually contain the block or shortcode.
+- **Conditional Asset Loading**: Plugin CSS and Google Fonts are only enqueued on pages that actually contain a block or shortcode.
 - **Stylish Design**: Neon-themed design with responsive layouts optimized for desktop and mobile devices. Theme developers can disable the built-in stylesheet via the `retroeh_use_default_styles` filter and supply their own CSS.
 
 ## Installation
@@ -18,7 +19,7 @@ The block can be configured to show the latest game played by a user or details 
 
 ## Configuration
 ### Set Your API Key
-Before using the block or shortcode, store your RetroAchievements API key in the plugin settings:
+Before using the blocks or shortcodes, store your RetroAchievements API key in the plugin settings:
 
 1. In your WordPress admin dashboard, go to **Settings > RetroEh!**.
 2. Enter your **RetroAchievements API Key** in the field provided.
@@ -26,8 +27,12 @@ Before using the block or shortcode, store your RetroAchievements API key in the
 
 Keeping the key in settings prevents it from being stored in post content and keeps it out of the block editor.
 
-## How to Use the Block
-### Add the Block to a Page or Post
+## Blocks
+
+### Game Display Block — `retroeh/game-display`
+Displays box art, an in-game screenshot as the background, console name, and last-played time for a specific game or a user's most recently played game.
+
+#### Add the Block to a Page or Post
 1. Navigate to **Pages** or **Posts** in the WordPress admin dashboard.
 2. Open the desired page/post or create a new one.
 3. In the block editor:
@@ -39,31 +44,43 @@ Keeping the key in settings prevents it from being stored in post content and ke
    - (Optional) Specify a **Game ID** to show details for a specific game. Game ID takes precedence over username when both are provided.
 5. Save or publish the page/post.
 
-### Add the Block to a Sidebar or Widget Area
-1. Navigate to **Appearance > Widgets** in the WordPress admin dashboard.
-2. Click the **Add Block** (`+`) button in the desired widget area (e.g., Sidebar).
-3. Search for **RetroEH Game Display**.
-4. Add the block to the widget area.
-5. Configure the block in the **Inspector Controls** sidebar:
-   - Provide a **Username** to display the latest game played by that user.
-   - (Optional) Specify a **Game ID** to show details for a specific game.
-6. Save the widget.
+#### Block Attributes
+| Attribute | Description |
+|---|---|
+| `username` | (Optional) RetroAchievements username to display the latest game played. |
+| `game_id` | (Optional) Game ID to display a specific game. Takes precedence over `username` when both are set. |
 
-## Shortcode
-You can also display game details using a shortcode:
+> **Note:** The API key is not a block attribute. Configure it once under **Settings > RetroEh!**.
 
+#### Shortcode
 ```
 [retroeh_game_display username="YourUsername"]
 [retroeh_game_display game_id="1234"]
 ```
-
 The API key is read automatically from the plugin settings. The `api_key` attribute is accepted as a backward-compatibility fallback but is no longer recommended.
 
-## Block Attributes
-- **Username**: (Optional) The RetroAchievements username to display the latest game played.
-- **Game ID**: (Optional) The ID of the game to display specific details. If provided, this takes precedence over the username.
+---
 
-> **Note:** The API key is no longer a block attribute. Configure it once under **Settings > RetroEh!**.
+### User Profile Block — `retroeh/user-profile`
+Displays a retro-styled profile card for a RetroAchievements user, including their avatar, username, motto, hardcore and true point totals, member-since date, and current rich-presence activity.
+
+#### Add the Block to a Page or Post
+1. In the block editor, click the **Add Block** (`+`) button.
+2. Search for **RetroEH User Profile**.
+3. Add the block and configure the **Username** in the **Inspector Controls** sidebar.
+4. Save or publish the page/post.
+
+#### Block Attributes
+| Attribute | Description |
+|---|---|
+| `username` | (Required) RetroAchievements username whose profile card to display. |
+
+#### Shortcode
+```
+[retroeh_user_profile username="YourUsername"]
+```
+
+---
 
 ## Theme Developer Customisation
 
@@ -77,8 +94,9 @@ Theme developers can disable this stylesheet and provide their own CSS by hookin
 add_filter( 'retroeh_use_default_styles', '__return_false' );
 ```
 
-Once the default stylesheet is disabled, you can style the widget using the plugin's BEM-style class names:
+Once the default stylesheet is disabled, you can style the widgets using the plugin's BEM-style class names:
 
+#### Game Display Classes
 | Class | Element |
 |---|---|
 | `.retroeh-container` | Outer wrapper / background image container |
@@ -87,6 +105,19 @@ Once the default stylesheet is disabled, you can style the widget using the plug
 | `.retroeh-details` | Game details text wrapper |
 | `.retroeh-details h2` | Game title heading |
 | `.retroeh-details p` | Console and last-played paragraphs |
+
+#### User Profile Classes
+| Class | Element |
+|---|---|
+| `.retroeh-profile-card` | Outer card wrapper |
+| `.retroeh-profile-avatar img` | The user avatar `<img>` element |
+| `.retroeh-profile-info` | Text/stats panel |
+| `.retroeh-profile-info h2` | Username heading |
+| `.retroeh-profile-motto` | Motto paragraph |
+| `.retroeh-profile-stats` | Stats flex-row wrapper |
+| `.retroeh-stat-label` | Stat label span |
+| `.retroeh-stat-value` | Stat value span |
+| `.retroeh-profile-presence` | Rich-presence / currently-playing paragraph |
 
 Place this snippet in your theme's `functions.php` (or in a site-specific plugin) and enqueue your own stylesheet as normal via `wp_enqueue_style()`.
 
@@ -100,12 +131,17 @@ Place this snippet in your theme's `functions.php` (or in a site-specific plugin
 ## Performance
 - **Transient caching**: API responses are cached for one hour. Cache keys are scoped to an 8-character API key hash so different credentials never share cached data.
 - **HTTP timeout**: `wp_remote_get` uses a 10-second timeout to prevent slow API responses from blocking page rendering.
-- **Conditional asset loading**: Plugin CSS and Google Fonts are only enqueued on pages containing the `retroeh/game-display` block or `retroeh_game_display` shortcode.
+- **Conditional asset loading**: Plugin CSS and Google Fonts are only enqueued on pages containing a `retroeh/*` block or a `retroeh_*` shortcode.
+
+## Roadmap
+See [ROADMAP.md](ROADMAP.md) for the full list of planned future blocks, including recent achievements feeds, game leaderboards, achievement-of-the-week widgets, and more.
 
 ## Screenshots
 ### Block Configuration in the Editor
 (Add your screenshot URL here)
 ### Game Display on a Page
+(Add your screenshot URL here)
+### User Profile Card on a Page
 (Add your screenshot URL here)
 ### Mobile Layout
 (Add your screenshot URL here)

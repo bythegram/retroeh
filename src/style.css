@@ -105,3 +105,113 @@
         margin-left: -40px;
     }
 }
+
+/* =========================================
+   User Profile Card
+   ========================================= */
+
+.retroeh-profile-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    background-color: #010a01;
+    border: 2px solid #39ff14;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    color: #fff;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Avatar */
+.retroeh-profile-avatar img {
+    display: block;
+    width: 96px;
+    height: 96px;
+    border: 3px solid #39ff14;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Info panel */
+.retroeh-profile-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.retroeh-profile-info h2 {
+    margin: 0 0 8px;
+    font-family: "Tiny5", sans-serif;
+    color: #39ff14;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+/* Motto */
+.retroeh-profile-motto {
+    margin: 0 0 12px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.95rem;
+}
+
+/* Stats */
+.retroeh-profile-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.retroeh-profile-stats p {
+    margin: 0;
+    padding: 4px 10px;
+    background-color: rgba(57, 255, 20, 0.12);
+    border: 1px solid rgba(57, 255, 20, 0.4);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.retroeh-stat-label {
+    color: rgba(255, 255, 255, 0.65);
+    margin-right: 4px;
+}
+
+.retroeh-stat-value {
+    color: #39ff14;
+    font-weight: bold;
+}
+
+/* Rich presence / currently playing */
+.retroeh-profile-presence {
+    margin: 0;
+    padding: 6px 10px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-left: 3px solid #39ff14;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.4;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 768px) {
+    .retroeh-profile-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .retroeh-profile-stats {
+        justify-content: center;
+    }
+
+    .retroeh-profile-presence {
+        border-left: none;
+        border-top: 3px solid #39ff14;
+        border-radius: 0 0 4px 4px;
+        text-align: left;
+    }
+}
